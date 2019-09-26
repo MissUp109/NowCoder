@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+//在O(n log n)的时间内使用常数级空间复杂度对链表进行排序。
 struct ListNode {
     int val;
     ListNode *next;
@@ -19,39 +20,50 @@ public:
 
     ListNode *sortList(ListNode *head) {
     	if(head == NULL || head->next == NULL) return head;
-        ListNode* tail = head;
-        ListNode* cur = tail->next;
-        while(cur){
-        	if(cur->val >= tail->val){
-        		tail = cur;
-        		cur = cur->next;
-        	}
-        	else{
-        		ListNode* cnxt = cur->next;
-        		if(head == tail){  			
-        			cur->next = head;
-        			head->next = cnxt;
-        			head = cur;
-        		}
-        		else if(head->val > cur->val){
-        			cur->next = head;
-        			tail->next = cnxt;
-        			head = cur;
-        		}
-        		else{
-        			ListNode* tmp = head;
-        			while(tmp->next){
-        				if(tmp->next->val > cur->val) break;
-        				tmp = tmp->next;
-        			}
-        			cur->next = tmp->next;
-        			tmp->next = cur;
-        			tail->next = cnxt;
-        		}
-        		cur = cnxt;
-        	}
-        	//print(head);
+        ListNode *slow = head, *fast = head;
+        while(fast->next && fast->next->next){
+            slow = slow->next;
+            fast = fast->next->next;
         }
+
+        ListNode *l1 = head, *l2 = slow->next;
+        slow->next = NULL;
+        l1 = sortList(l1);
+        l2 = sortList(l2);
+        head = mergeList(l1, l2);
+        return head;
+    }
+
+    ListNode *mergeList(ListNode *l1, ListNode *l2){
+        if(l1 == NULL) return l2;
+        if(l2 == NULL) return l1;
+
+        ListNode *head = NULL;
+        if(l1->val < l2->val){
+            head = l1;
+            l1 = l1->next;
+        }
+        else{
+            head = l2;
+            l2 = l2->next;
+        }
+
+        ListNode *tail = head;
+        while(l1 && l2){
+            if(l1->val < l2->val){
+                tail->next = l1;
+                l1 = l1->next;
+            }
+            else{
+                tail->next = l2;
+                l2 = l2->next;
+            }
+            tail = tail->next;
+        }
+
+        if(l1) tail->next = l1;
+        if(l2) tail->next = l2;
+
         return head;
     }
 };
@@ -64,13 +76,11 @@ int main(){
 	ListNode* n3 = new ListNode(2);
 	ListNode* n4 = new ListNode(3);
 	
-	//head->next = n1;
-	//n1->next = n2;
-	//n2->next = n3;
-	//n3->next = n4;
-	//n4->next = NULL;
+	head->next = n1;
+	n1->next = n2;
+	n2->next = n3;
+	n3->next = n4;
 	
-	//head = sol.sortList(head);
-	//sol.sortList(head);
+	head = sol.sortList(head);
 	sol.print(head);
 }
