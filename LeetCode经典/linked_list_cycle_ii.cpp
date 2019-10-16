@@ -30,8 +30,15 @@ public:
         	}
         }
         if(!flag) return NULL;
+
+        ListNode *p = head;
+        while(1){
+            if(p == slow) break;
+            slow = slow->next;
+            p = p->next;
+        }
         
-        ListNode *
+        return p;
     }
 };
 
@@ -47,8 +54,10 @@ int main(){
 	n1->next = n2;
 	n2->next = n3;
 	n3->next = n4;
-	n4->next = NULL;
-	
+	n4->next = n3;
 
+    ListNode *ret = sol.detectCycle(head);
+    if(!ret) cout << "it is NULL" << endl;
+    else cout << ret->val << endl;
 }
 
